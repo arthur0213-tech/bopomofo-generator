@@ -1,0 +1,849 @@
+/* Root design variables */
+:root {
+  --bg-app: #f1f5f9;
+  --bg-sidebar: rgba(255, 255, 255, 0.95);
+  --border-color: #cbd5e1;
+  --text-main: #334155;
+  --text-muted: #64748b;
+  --accent-color: #2563eb;
+  --accent-hover: #1d4ed8;
+  
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-paper: 0 15px 35px -5px rgba(0,0,0,0.1), 0 10px 15px -8px rgba(0,0,0,0.08);
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  
+  --font-ui: 'Outfit', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Main App Layout */
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Left Sidebar: Controls */
+.control-panel {
+  width: 380px;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+}
+
+.panel-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.panel-header .logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.panel-header h1 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.panel-header p {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.control-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+/* Scrollbar Styling */
+.control-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.control-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.control-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.control-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Control section styles */
+.control-section {
+  margin-bottom: 24px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 16px;
+}
+
+.control-section:last-child {
+  border-bottom: none;
+}
+
+.control-section h2 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-section h2 i {
+  width: 15px;
+  height: 15px;
+  color: #10b981;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: white;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.input-tip {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Custom radio option layout */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #334155;
+}
+
+.radio-label input[type="radio"] {
+  accent-color: #10b981;
+}
+
+/* Colors Selection */
+.color-picker {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.color-option {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.active {
+  border-color: #0f172a;
+  transform: scale(1.1);
+}
+
+/* Range input styling */
+input[type="range"] {
+  width: 100%;
+  accent-color: #10b981;
+}
+
+/* Quantity Configuration grid */
+.grid-config-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.grid-config-row input[type="number"] {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Footer / Action panel */
+.panel-footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--border-color);
+  background-color: white;
+}
+
+.footer-notice {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 10px;
+  line-height: 1.4;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-primary {
+  background-color: #10b981;
+  color: white;
+}
+.btn-primary:hover {
+  background-color: #059669;
+}
+
+.btn-secondary {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+.btn-secondary:hover {
+  background-color: #e2e8f0;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* Right Side preview */
+.preview-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #cbd5e1;
+}
+
+#pages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* A4 Paper mockup */
+.a4-page {
+  background-color: white;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  box-shadow: var(--shadow-paper);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* Header printed on top of the sheet (for simple mode) */
+.print-header {
+  margin-bottom: 20px;
+  border-bottom: 2px solid #334155;
+  padding-bottom: 8px;
+}
+
+.print-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: center;
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+  margin-bottom: 4px;
+}
+
+.print-header p {
+  font-size: 13px;
+  color: #334155;
+  text-align: right;
+  font-weight: 500;
+}
+
+/* Interactive Hint banner */
+.edit-hint-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  color: #15803d;
+  font-size: 11px;
+}
+
+.edit-hint-banner i {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+/* Empty placeholder */
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 350px;
+  color: var(--text-muted);
+  font-size: 14px;
+  border: 2px dashed #cbd5e1;
+  border-radius: var(--radius-md);
+  margin-top: 40px;
+  width: 100%;
+}
+
+/* ---------------------------------------------------- */
+/* Green Schoolbook Workbook Sheet (10 rows x 6 columns) */
+/* ---------------------------------------------------- */
+.green-sheet {
+  padding: 15mm !important; /* Slightly larger grid padding */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Header on the Green sheet */
+.green-sheet .sheet-header {
+  display: flex;
+  border: 2px solid #388e3c;
+  border-bottom: none; /* collapses with grid top border */
+  width: 100%;
+  max-width: 782px; /* 6 * 130px border collapse spacing */
+  height: 80px;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.green-sheet .header-main {
+  flex: 1;
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.green-sheet .sheet-title {
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: #388e3c;
+  margin-bottom: 4px;
+  letter-spacing: 2px;
+}
+
+.green-sheet .sheet-subtitle {
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  color: #388e3c;
+  letter-spacing: 1px;
+}
+
+.green-sheet .header-correction {
+  width: 80px;
+  border-left: 2px solid #388e3c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #388e3c;
+  text-align: center;
+  line-height: 1.3;
+  letter-spacing: 2px;
+  background-color: #ffffff;
+}
+
+/* Grid splits: 5 rows each */
+.green-sheet .sheet-half {
+  display: grid;
+  grid-template-columns: repeat(6, auto);
+  width: 100%;
+  max-width: 782px;
+  background-color: #ffffff;
+}
+
+/* Middle Divider: double horizontal line */
+.green-sheet .top-half {
+  border-bottom: 4px double #388e3c;
+  box-sizing: border-box;
+}
+
+/* Simple sheet wrapping */
+.simple-sheet .worksheet-grids-area {
+  flex: 1;
+}
+
+/* ---------------------------------------------------- */
+/* Mode A: Bopomofo-Only flexible grid styles */
+/* ---------------------------------------------------- */
+.zhuyin-only-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-start;
+  padding: 10px 0;
+}
+
+.zhuyin-flex-block {
+  display: inline-flex;
+  flex-direction: row;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  padding: 2px;
+}
+
+.zhuyin-flex-block:hover {
+  background-color: rgba(16, 185, 129, 0.05);
+  transform: scale(1.02);
+}
+
+/* Non Chinese punctuation items */
+.non-chinese-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #1e293b;
+  user-select: none;
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+}
+
+.line-break {
+  width: 100%;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Grid cell SVGs */
+.grid-svg {
+  display: block;
+  margin: -1px; /* border collapse overlap */
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+/* SVG Text elements style */
+.text-solid {
+  fill: #000000;
+}
+
+.text-trace {
+  fill: #cbd5e1 !important; /* light slate gray for tracing */
+  stroke: #94a3b8;
+  stroke-width: 0.4px;
+  stroke-dasharray: 2,2;
+}
+
+/* Modal Dialog */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 8% auto;
+  width: 90%;
+  max-width: 500px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: modalEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalEnter {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8fafc;
+}
+
+.modal-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.close-modal {
+  color: var(--text-muted);
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.close-modal:hover {
+  color: #0f172a;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.char-display-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.char-display-section .label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.modal-char-highlight {
+  font-size: 34px;
+  font-weight: bold;
+  color: #0f172a;
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+  margin-left: 10px;
+  background-color: #f1f5f9;
+  padding: 2px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed #cbd5e1;
+}
+
+.edit-section h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.edit-section-tip {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.polyphone-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.polyphone-btn {
+  padding: 6px 12px;
+  background-color: #f1f5f9;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: #334155;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.polyphone-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.polyphone-btn.selected {
+  background-color: #dbeafe;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.modal-divider {
+  border: 0;
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 18px 0;
+}
+
+.manual-input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.modal-footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--border-color);
+  background-color: #f8fafc;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Page Header on top of worksheet (Class, Seat No, Name with Bopomofo on right) */
+.page-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 16px;
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+  color: #388e3c;
+  box-sizing: border-box;
+}
+
+.header-field {
+  display: flex;
+  align-items: flex-end;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.char-with-zhuyin {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  margin-right: 6px;
+}
+
+.char-hanzi {
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.char-zhuyin {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 2px;
+  height: 24px;
+}
+
+.zhuyin-symbols {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+  font-size: 10px;
+  line-height: 1.05;
+  font-weight: normal;
+}
+
+.last-symbol-wrap {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  line-height: 1;
+}
+
+.zhuyin-tone {
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+  font-size: 9px;
+  font-weight: normal;
+  position: absolute;
+  left: 100%;
+  top: -2px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.header-line {
+  display: inline-block;
+  border-bottom: 1.5px solid #388e3c;
+  height: 1.1em;
+  margin-left: 4px;
+}
+
+.header-line.line-short {
+  width: 65px;
+}
+
+.header-line.line-long {
+  width: 100px;
+}
+
+/* Page Footer on Worksheet */
+.page-footer {
+  margin-top: 10px;
+  text-align: right;
+  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #388e3c;
+  box-sizing: border-box;
+}
+
+.footer-note {
+  letter-spacing: 0.5px;
+}
+
+/* Printing Specific styles */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0; /* Let sheet padding handle the margin */
+  }
+  
+  body, html {
+    background-color: white !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: auto !important;
+  }
+  
+  .control-panel,
+  .no-print,
+  .edit-hint-banner {
+    display: none !important;
+  }
+  
+  .preview-area {
+    padding: 0 !important;
+    background-color: white !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+  
+  .a4-page {
+    width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    padding: 12mm 15mm 15mm 15mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    page-break-after: auto !important;
+    break-after: auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  .a4-page:not(:last-child) {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+  
+  #pages-container {
+    gap: 0 !important;
+  }
+
+  .green-sheet {
+    max-width: 100% !important;
+  }
+
+  .green-sheet .sheet-header,
+  .green-sheet .sheet-half {
+    max-width: 100% !important;
+  }
+}

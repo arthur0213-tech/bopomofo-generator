@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>國小一年級注音田字格練習卷產生器</title>
+  
+  <!-- Google Fonts for premium UI typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Styling -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Load pinyin-pro from CDN -->
+  <script src="https://unpkg.com/pinyin-pro@3.29.3/dist/index.js"></script>
+  
+  <!-- Load Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Main Web App Layout -->
+  <div class="app-layout">
+    
+    <!-- Left Sidebar: Control Panel (Hidden during Print) -->
+    <aside class="control-panel">
+      <header class="panel-header">
+        <div class="logo">
+          <i data-lucide="pen-tool"></i>
+        </div>
+        <div>
+          <h1>ㄅㄆㄇ練習卷產生器</h1>
+          <p>國小一年級專用田字格工具</p>
+        </div>
+      </header>
+
+      <div class="control-scroll">
+
+
+        <!-- Section 2: Input Text -->
+        <section class="control-section">
+          <h2><i data-lucide="keyboard"></i> 輸入練習中文/注音</h2>
+          <div class="form-group">
+            <label for="text-input">中文字或注音 (同一個字的注音請連著打！不同字用空格隔開)</label>
+            <textarea id="text-input" placeholder="可輸入中文（如：我們大家），或直接輸入注音（如：ㄅ ㄇ一 ㄒ一ㄠˇ）。注意：同字注音請連著打如「ㄇ一」或「ㄒ一ㄠˇ」，字與字之間用空白鍵隔開！" rows="4">ㄇ一 ㄒ一ㄠˇ</textarea>
+            <span class="input-tip">提示：輸入中文字會自動帶出注音。直接輸入注音時，請以空白鍵隔開格子。已自動相容中文字「一」與注音「ㄧ」，請安心輸入！</span>
+          </div>
+        </section>
+
+        <!-- Section 3: Layout Settings -->
+        <section class="control-section">
+          <h2><i data-lucide="layout"></i> 版面與格線設定</h2>
+          
+          <div class="form-group">
+            <label>版面模式</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="layout-mode" value="zhuyin-only" checked>
+                <span>純注音田字格 (大) (9x12 練習卷)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="layout-mode" value="hanzi-zhuyin">
+                <span>國字注音格 (7x12 練習格)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group toggle-show-hanzi">
+            <label>顯示國字 (限國字注音格)</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="show-hanzi" value="yes" checked>
+                <span>顯示國字 (寫國字+注音)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="show-hanzi" value="no">
+                <span>隱藏國字 (快速製作注音練習本)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group toggle-fill-mode">
+            <label>填充模式</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="fill-mode" value="char-row" checked>
+                <span>單字整欄練習 (一字一欄)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="fill-mode" value="continuous">
+                <span>全文連續填滿 (格子流)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group toggle-writing-dir" style="display: none;">
+            <label>排版方向 (限全文連續填滿)</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="writing-direction" value="vertical" checked>
+                <span>直排 (由右至左、上至下)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="writing-direction" value="horizontal">
+                <span>橫排 (由左至右、上至下)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>格線樣式</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="grid-type" value="tian" checked>
+                <span>田字格</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="grid-type" value="mi">
+                <span>米字格</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group toggle-grid-color">
+            <label>格線顏色 (限純注音格)</label>
+            <div class="color-picker">
+              <button class="color-option" style="background-color: #ff6b6b;" data-color="#ff6b6b" title="紅/粉色"></button>
+              <button class="color-option" style="background-color: #2ec4b6;" data-color="#2ec4b6" title="綠色"></button>
+              <button class="color-option" style="background-color: #0077b6;" data-color="#0077b6" title="藍色"></button>
+              <button class="color-option active" style="background-color: #388e3c;" data-color="#388e3c" title="綠色(課本樣式)"></button>
+              <button class="color-option" style="background-color: #7f8c8d;" data-color="#7f8c8d" title="灰色"></button>
+            </div>
+          </div>
+
+          <div class="form-group toggle-trace-count">
+            <label for="trace-count-slider">描紅格數 (灰色字練習次數): <span id="trace-count-val">3格</span></label>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+              <input type="range" id="trace-count-slider" min="0" max="11" value="3" step="1">
+              <input type="number" id="trace-count-num" min="0" max="11" value="3" style="width: 55px; text-align: center;">
+            </div>
+            <span class="input-tip">可設定 0～11 次。設為 0 表示全部留空白；設為 11 表示整欄剩餘格子皆顯示灰色描紅。</span>
+          </div>
+
+          <div class="form-group">
+            <label for="grid-size">格子大小: <span id="grid-size-val">70px</span></label>
+            <input type="range" id="grid-size" min="50" max="100" value="70" step="5">
+          </div>
+        </section>
+
+
+
+      <!-- Action Button at the bottom -->
+      <footer class="panel-footer">
+        <button id="btn-print" class="btn btn-primary btn-block">
+          <i data-lucide="printer"></i>
+          <span>列印 / 輸出 PDF 練習卷</span>
+        </button>
+        <div class="footer-notice">
+          中正國小115學年一年級導師共同設計，不再更新維護
+        </div>
+      </footer>
+    </aside>
+
+    <!-- Right Side: A4 Page Preview Area -->
+    <main class="preview-area">
+      <!-- Worksheet Pages Wrapper -->
+      <div id="pages-container">
+        <!-- Rendered worksheets go here -->
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Interactive Edit Modal Dialog (Hidden by Default) -->
+  <div id="edit-modal" class="modal">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3>修改國字注音與聲調</h3>
+        <span class="close-modal">&times;</span>
+      </header>
+      
+      <div class="modal-body">
+        <div class="char-display-section">
+          <span class="label">當前國字：</span>
+          <span id="modal-char" class="modal-char-highlight">學</span>
+        </div>
+
+        <!-- Polyphone suggestions -->
+        <div class="edit-section">
+          <h4>推薦讀音 (點擊快速套用)</h4>
+          <div id="polyphone-options" class="polyphone-options">
+            <!-- Dynamic button lists -->
+          </div>
+        </div>
+
+        <hr class="modal-divider">
+
+        <!-- Manual Edit Form -->
+        <div class="edit-section">
+          <h4>手動調整注音符號</h4>
+          <p class="edit-section-tip">若找不到發音，請直接在下方欄位修改符號（可留空）。</p>
+          
+          <div class="manual-input-grid">
+            <div class="form-group">
+              <label for="edit-symbol-1">聲母 (最上方)</label>
+              <input type="text" id="edit-symbol-1" placeholder="例如：ㄒ" maxlength="2">
+            </div>
+            <div class="form-group">
+              <label for="edit-symbol-2">介母 (中間)</label>
+              <input type="text" id="edit-symbol-2" placeholder="例如：ㄧ" maxlength="2">
+            </div>
+            <div class="form-group">
+              <label for="edit-symbol-3">韻母 (最下方)</label>
+              <input type="text" id="edit-symbol-3" placeholder="例如：ㄠ" maxlength="2">
+            </div>
+            <div class="form-group">
+              <label for="edit-tone">聲調</label>
+              <select id="edit-tone">
+                <option value="1">第一聲 (陰平 - 空白)</option>
+                <option value="2">第二聲 (陽平 - ˊ)</option>
+                <option value="3">第三聲 (上聲 - ˇ)</option>
+                <option value="4">第四聲 (去聲 - ˋ)</option>
+                <option value="5">第五聲 (輕聲 - ˙)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer class="modal-footer">
+        <button id="btn-save-edit" class="btn btn-primary">確認儲存</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Initialize Lucide icons -->
+  <script>
+    lucide.createIcons();
+  </script>
+  <!-- Load app logic -->
+  <script src="app.js?v=1.1.8"></script>
+</body>
+</html>
