@@ -326,23 +326,25 @@ function triggerConversion() {
   while (i < text.length) {
     const remaining = text.slice(i);
     
-    // 1. Match Bopomofo token
+    // 1. Match Bopomofo token (must contain at least one standard Bopomofo character \u3105-\u3129)
     const bopomofoMatch = remaining.match(bopomofoRegex);
     if (bopomofoMatch) {
       const tokenStr = bopomofoMatch[1];
-      const parsed = parseBopomofoToken(tokenStr);
-      
-      charactersData.push({
-        char: '', // empty Chinese character
-        isChinese: true, // Grid-ready
-        isBopomofoInput: true,
-        pinyin: 'custom',
-        options: [tokenStr],
-        zhuyin: parsed
-      });
-      
-      i += tokenStr.length;
-      continue;
+      if (/[\u3105-\u3129]/.test(tokenStr)) {
+        const parsed = parseBopomofoToken(tokenStr);
+        
+        charactersData.push({
+          char: '', // empty Chinese character
+          isChinese: true, // Grid-ready
+          isBopomofoInput: true,
+          pinyin: 'custom',
+          options: [tokenStr],
+          zhuyin: parsed
+        });
+        
+        i += tokenStr.length;
+        continue;
+      }
     }
     
     const char = text[i];
