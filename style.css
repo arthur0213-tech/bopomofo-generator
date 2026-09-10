@@ -772,21 +772,6 @@ input[type="range"] {
   width: 100px;
 }
 
-/* Page Footer on Worksheet */
-.page-footer {
-  margin-top: 10px;
-  text-align: right;
-  font-family: "DFKai-SB", "標楷體", "Microsoft JhengHei", sans-serif;
-  font-size: 11px;
-  line-height: 1.4;
-  color: #388e3c;
-  box-sizing: border-box;
-}
-
-.footer-note {
-  letter-spacing: 0.5px;
-}
-
 /* Printing Specific styles */
 @media print {
   @page {

@@ -775,9 +775,6 @@ function renderWorksheet() {
     pagesContainer.innerHTML = `
       <div class="a4-page green-sheet">
         <div class="empty-state">請在左側輸入框輸入中文以產生練習卷</div>
-        <div class="page-footer" style="width: 100%; text-align: right; color: ${config.gridColor};">
-          <span class="footer-note">中正國小115學年一年級導師共同設計，不再更新維護</span>
-        </div>
       </div>`;
     return;
   }
@@ -1026,9 +1023,6 @@ function createA4Page() {
     </div>
     <div class="sheet-half top-half"></div>
     <div class="sheet-half bottom-half"></div>
-    <div class="page-footer">
-      <span class="footer-note">中正國小115學年一年級導師共同設計，不再更新維護</span>
-    </div>
   `;
 
   // Set widths dynamically based on layoutMode and gridSize
@@ -1042,7 +1036,6 @@ function createA4Page() {
   const header = page.querySelector('.page-header');
   const topHalf = page.querySelector('.top-half');
   const bottomHalf = page.querySelector('.bottom-half');
-  const footer = page.querySelector('.page-footer');
   
   if (header) {
     header.style.width = `${rowWidth}px`;
@@ -1061,11 +1054,6 @@ function createA4Page() {
     bottomHalf.style.width = `${rowWidth}px`;
     bottomHalf.style.maxWidth = `${rowWidth}px`;
     bottomHalf.style.gridTemplateColumns = `repeat(${numCols}, ${cellWidth}px)`;
-  }
-  if (footer) {
-    footer.style.width = `${rowWidth}px`;
-    footer.style.maxWidth = `${rowWidth}px`;
-    footer.style.color = config.gridColor;
   }
 
   return page;
