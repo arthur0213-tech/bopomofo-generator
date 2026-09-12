@@ -102,6 +102,7 @@ const config = {
   layoutMode: 'zhuyin-only', // 'zhuyin-only', 'hanzi-zhuyin', or 'textbook-10x6'
   showHanzi: true, // true = Show Hanzi in Square
   fillMode: 'char-row', // 'char-row' (one char per row/col) or 'continuous' (grid flow)
+  unitSize: 12, // 12 or 6 grids per practice unit in char-row mode
   writingDirection: 'vertical', // 'vertical' (right-to-left columns) or 'horizontal' (row-by-row)
   gridType: 'tian', // 'tian' (田字格) or 'mi' (米字格)
   gridColor: '#388e3c', // default green for schoolbook sheet
@@ -126,6 +127,7 @@ function updatePanelVisibility() {
 
   const toggleShowHanzi = document.querySelector('.toggle-show-hanzi');
   const toggleFill = document.querySelector('.toggle-fill-mode');
+  const toggleUnitSize = document.querySelector('.toggle-unit-size');
   const toggleDir = document.querySelector('.toggle-writing-dir');
   const toggleTrace = document.querySelector('.toggle-trace-count');
   const colorPicker = document.querySelector('.toggle-grid-color');
@@ -135,11 +137,39 @@ function updatePanelVisibility() {
   if (toggleFill) toggleFill.style.display = 'block';
 
   if (isCharRow) {
+    if (toggleUnitSize) toggleUnitSize.style.display = 'block';
     if (toggleDir) toggleDir.style.display = 'none';
     if (toggleTrace) toggleTrace.style.display = 'block';
   } else {
+    if (toggleUnitSize) toggleUnitSize.style.display = 'none';
     if (toggleDir) toggleDir.style.display = 'block';
     if (toggleTrace) toggleTrace.style.display = 'none';
+  }
+
+  updateTraceSliderRange();
+}
+
+function updateTraceSliderRange() {
+  const traceSlider = document.getElementById('trace-count-slider');
+  const traceNum = document.getElementById('trace-count-num');
+  const traceTip = document.querySelector('.toggle-trace-count .input-tip');
+  const maxTrace = (config.fillMode === 'char-row' && config.unitSize === 6) ? 5 : 11;
+  
+  if (traceSlider && traceNum) {
+    traceSlider.max = maxTrace;
+    traceNum.max = maxTrace;
+    if (config.traceCount > maxTrace) {
+      config.traceCount = maxTrace;
+      traceSlider.value = maxTrace;
+      traceNum.value = maxTrace;
+      const traceValSpan = document.getElementById('trace-count-val');
+      if (traceValSpan) traceValSpan.textContent = `${maxTrace}格`;
+    }
+  }
+  if (traceTip) {
+    traceTip.textContent = (config.fillMode === 'char-row' && config.unitSize === 6)
+      ? `可設定 0～5 次。設為 5 表示半欄內剩餘格子皆顯示灰色描紅。`
+      : `可設定 0～11 次。設為 11 表示整欄內剩餘格子皆顯示灰色描紅。`;
   }
 }
 
@@ -175,6 +205,15 @@ function setupListeners() {
     });
   });
 
+  // Unit Size (12 vs 6)
+  document.querySelectorAll('input[name="unit-size"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      config.unitSize = parseInt(e.target.value, 10);
+      updateTraceSliderRange();
+      renderWorksheet();
+    });
+  });
+
   // Writing Direction
   document.querySelectorAll('input[name="writing-direction"]').forEach(radio => {
     radio.addEventListener('change', (e) => {
@@ -183,7 +222,7 @@ function setupListeners() {
     });
   });
 
-  // Trace count (0-11) slider & number input
+  // Trace count slider & number input
   const traceSlider = document.getElementById('trace-count-slider');
   const traceNum = document.getElementById('trace-count-num');
   const traceValSpan = document.getElementById('trace-count-val');
@@ -192,7 +231,8 @@ function setupListeners() {
     const updateTraceCount = (val) => {
       let num = parseInt(val, 10);
       if (isNaN(num)) num = 0;
-      num = Math.max(0, Math.min(11, num));
+      const maxTrace = (config.fillMode === 'char-row' && config.unitSize === 6) ? 5 : 11;
+      num = Math.max(0, Math.min(maxTrace, num));
       config.traceCount = num;
       traceSlider.value = num;
       traceNum.value = num;
@@ -801,8 +841,10 @@ function renderWorksheet() {
     }
     const activeLines = linesOfGrids;
 
-    const colsPerPage = numCols;
-    const totalPages = Math.ceil(activeLines.length / colsPerPage) || 1;
+    const unitSize = config.unitSize || 12; // 12 or 6
+    const unitsPerCol = Math.floor(numRows / unitSize); // 1 for 12-grid, 2 for 6-grid
+    const unitsPerPage = numCols * unitsPerCol; // 9/18 for zhuyin-only, 7/14 for hanzi-zhuyin
+    const totalPages = Math.ceil(activeLines.length / unitsPerPage) || 1;
     
     for (let pageNum = 0; pageNum < totalPages; pageNum++) {
       const page = createA4Page();
@@ -811,31 +853,34 @@ function renderWorksheet() {
       const topHalf = page.querySelector('.top-half');
       const bottomHalf = page.querySelector('.bottom-half');
       
-      const startIdx = pageNum * colsPerPage;
-      const pageColumns = activeLines.slice(startIdx, startIdx + colsPerPage);
+      const startUnitIdx = pageNum * unitsPerPage;
+      const pageUnits = activeLines.slice(startUnitIdx, startUnitIdx + unitsPerPage);
 
       // Create a numRows x numCols grid of SVGs
       const svgGrid = Array(numRows).fill(null).map(() => Array(numCols).fill(null));
 
-      // Populate column by column, right-to-left
-      for (let c = 0; c < colsPerPage; c++) {
-        const colChars = pageColumns[c];
-        const colIdx = numCols - 1 - c; // Right-to-left flow
-        
+      // Populate unit by unit
+      for (let u = 0; u < pageUnits.length; u++) {
+        const colChars = pageUnits[u];
+        const colInPage = Math.floor(u / unitsPerCol);
+        const colIdx = numCols - 1 - colInPage; // Right-to-left flow
+        const subUnit = u % unitsPerCol;
+        const startRow = subUnit * unitSize;
+
         if (colChars && colChars.length > 0) {
           const L = colChars.length;
           const maxTrace = config.traceCount;
-          for (let r = 0; r < numRows; r++) {
+          for (let r = 0; r < unitSize; r++) {
             const item = colChars[r % L];
             let type = 'empty';
             if (r < L) {
-              type = 'prompt'; // The solid exemplars at the top of the column
-            } else if (r < L + maxTrace) {
-              type = 'trace'; // The next maxTrace cells are faint gray tracing
+              type = 'prompt'; // The solid exemplars
+            } else if (r < L + maxTrace && r < unitSize) {
+              type = 'trace'; // Tracing cells
             } else {
-              type = 'empty'; // Remaining cells below maxTrace are blank
+              type = 'empty'; // Blank cells
             }
-            svgGrid[r][colIdx] = { charData: item.charData, type, originalIndex: item.originalIndex };
+            svgGrid[startRow + r][colIdx] = { charData: item.charData, type, originalIndex: item.originalIndex };
           }
         }
       }
