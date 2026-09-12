@@ -101,8 +101,7 @@ const pagesContainer = document.getElementById('pages-container');
 const config = {
   layoutMode: 'zhuyin-only', // 'zhuyin-only', 'hanzi-zhuyin', or 'textbook-10x6'
   showHanzi: true, // true = Show Hanzi in Square
-  fillMode: 'char-row', // 'char-row' (one char per row/col) or 'continuous' (grid flow)
-  unitSize: 12, // 12 or 6 grids per practice unit in char-row mode
+  fillMode: 'char-unit-6', // 'char-unit-6', 'char-unit-12', or 'continuous'
   writingDirection: 'vertical', // 'vertical' (right-to-left columns) or 'horizontal' (row-by-row)
   gridType: 'tian', // 'tian' (田字格) or 'mi' (米字格)
   gridColor: '#388e3c', // default green for schoolbook sheet
@@ -123,11 +122,10 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function updatePanelVisibility() {
-  const isCharRow = config.fillMode === 'char-row';
+  const isCharUnit = config.fillMode === 'char-unit-6' || config.fillMode === 'char-unit-12';
 
   const toggleShowHanzi = document.querySelector('.toggle-show-hanzi');
   const toggleFill = document.querySelector('.toggle-fill-mode');
-  const toggleUnitSize = document.querySelector('.toggle-unit-size');
   const toggleDir = document.querySelector('.toggle-writing-dir');
   const toggleTrace = document.querySelector('.toggle-trace-count');
   const colorPicker = document.querySelector('.toggle-grid-color');
@@ -136,12 +134,10 @@ function updatePanelVisibility() {
   if (colorPicker) colorPicker.style.display = (config.layoutMode === 'zhuyin-only') ? 'block' : 'none';
   if (toggleFill) toggleFill.style.display = 'block';
 
-  if (isCharRow) {
-    if (toggleUnitSize) toggleUnitSize.style.display = 'block';
+  if (isCharUnit) {
     if (toggleDir) toggleDir.style.display = 'none';
     if (toggleTrace) toggleTrace.style.display = 'block';
   } else {
-    if (toggleUnitSize) toggleUnitSize.style.display = 'none';
     if (toggleDir) toggleDir.style.display = 'block';
     if (toggleTrace) toggleTrace.style.display = 'none';
   }
@@ -153,7 +149,7 @@ function updateTraceSliderRange() {
   const traceSlider = document.getElementById('trace-count-slider');
   const traceNum = document.getElementById('trace-count-num');
   const traceTip = document.querySelector('.toggle-trace-count .input-tip');
-  const maxTrace = (config.fillMode === 'char-row' && config.unitSize === 6) ? 5 : 11;
+  const maxTrace = config.fillMode === 'char-unit-6' ? 5 : 11;
   
   if (traceSlider && traceNum) {
     traceSlider.max = maxTrace;
@@ -167,7 +163,7 @@ function updateTraceSliderRange() {
     }
   }
   if (traceTip) {
-    traceTip.textContent = (config.fillMode === 'char-row' && config.unitSize === 6)
+    traceTip.textContent = config.fillMode === 'char-unit-6'
       ? `可設定 0～5 次。設為 5 表示半欄內剩餘格子皆顯示灰色描紅。`
       : `可設定 0～11 次。設為 11 表示整欄內剩餘格子皆顯示灰色描紅。`;
   }
@@ -205,15 +201,6 @@ function setupListeners() {
     });
   });
 
-  // Unit Size (12 vs 6)
-  document.querySelectorAll('input[name="unit-size"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-      config.unitSize = parseInt(e.target.value, 10);
-      updateTraceSliderRange();
-      renderWorksheet();
-    });
-  });
-
   // Writing Direction
   document.querySelectorAll('input[name="writing-direction"]').forEach(radio => {
     radio.addEventListener('change', (e) => {
@@ -231,7 +218,7 @@ function setupListeners() {
     const updateTraceCount = (val) => {
       let num = parseInt(val, 10);
       if (isNaN(num)) num = 0;
-      const maxTrace = (config.fillMode === 'char-row' && config.unitSize === 6) ? 5 : 11;
+      const maxTrace = config.fillMode === 'char-unit-6' ? 5 : 11;
       num = Math.max(0, Math.min(maxTrace, num));
       config.traceCount = num;
       traceSlider.value = num;
@@ -574,7 +561,7 @@ function generateGridSVG(charData, type = 'prompt') {
 
       const lineD2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       lineD2.setAttribute('x1', '100');
-      lineD2.setAttribute('y1', '0');
+      lineD2.setAttribute('y1', '1');
       lineD2.setAttribute('x2', '0');
       lineD2.setAttribute('y2', '100');
       lineD2.setAttribute('stroke', gridColor);
@@ -823,8 +810,8 @@ function renderWorksheet() {
   const numCols = isZhuyinOnly ? 9 : 7;
   const numRows = 12;
 
-  if (config.fillMode === 'char-row') {
-    // 1. One Character/Word per Column mode (12 rows vertically per page, flows column by column R-to-L)
+  if (config.fillMode === 'char-unit-6' || config.fillMode === 'char-unit-12') {
+    // 1. One Character/Word per Unit mode (6 or 12 rows vertically per unit)
     // Group charactersData by line (split by '\n')
     const linesOfGrids = [[]];
     charactersData.forEach((d, idx) => {
@@ -841,9 +828,9 @@ function renderWorksheet() {
     }
     const activeLines = linesOfGrids;
 
-    const unitSize = config.unitSize || 12; // 12 or 6
-    const unitsPerCol = Math.floor(numRows / unitSize); // 1 for 12-grid, 2 for 6-grid
-    const unitsPerPage = numCols * unitsPerCol; // 9/18 for zhuyin-only, 7/14 for hanzi-zhuyin
+    const unitSize = config.fillMode === 'char-unit-6' ? 6 : 12;
+    const unitsPerCol = Math.floor(numRows / unitSize); // 2 for 6-grid, 1 for 12-grid
+    const unitsPerPage = numCols * unitsPerCol; // 18/9 for zhuyin-only, 14/7 for hanzi-zhuyin
     const totalPages = Math.ceil(activeLines.length / unitsPerPage) || 1;
     
     for (let pageNum = 0; pageNum < totalPages; pageNum++) {
